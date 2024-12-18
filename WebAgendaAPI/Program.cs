@@ -32,8 +32,8 @@ builder.Services.AddSwaggerGen(c =>
     {
         { securitySchema, new string[] {}}
     });
-       
-   
+
+
 });
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
@@ -66,15 +66,15 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-    builder.Services.AddCors(options =>
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowVueApp", policy =>
     {
-        options.AddPolicy("AllowVueApp", policy =>
-        {
-            policy.WithOrigins("http://localhost:5050")
-                  .AllowAnyHeader() 
-                  .AllowAnyMethod(); 
-        });
+        policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
+});
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -100,7 +100,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapControllers();
 
-app.UseAuthentication(); 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.Run("https://localhost:7062");
